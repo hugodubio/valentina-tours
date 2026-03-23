@@ -1,0 +1,1 @@
+export const AGGREGATOR_FEE_PER_PERSON = 4.20;
