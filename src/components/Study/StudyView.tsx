@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import type { TourType } from '../../types/tour';
-import type { StudySection, StudyAttachment } from '../../types/study';
+import type { StudySection } from '../../types/study';
 import { TOUR_TYPES } from '../../constants/tours';
 import { useStudy } from '../../hooks/useStudy';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
-const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_MB = 50;
 
 function fileIcon(type: string) {
   if (type.startsWith('image/')) return (
@@ -27,12 +27,13 @@ function formatBytes(bytes: number) {
 }
 
 export default function StudyView() {
-  const { docs, upsertSection, deleteSection, addSection, addAttachment, deleteAttachment } = useStudy();
+  const { docs, upsertSection, deleteSection, addSection, uploadAttachment, deleteAttachment } = useStudy();
   const [selected, setSelected] = useState<TourType>('chiado');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newSectionTitle, setNewSectionTitle] = useState('');
   const [addingSection, setAddingSection] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [tab, setTab] = useState<'notes' | 'attachments'>('notes');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -77,50 +78,31 @@ export default function StudyView() {
     }
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
     setUploading(true);
-    const promises = files.map(file => {
+    setUploadError(null);
+
+    for (const file of files) {
       if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-        alert(`"${file.name}" excede ${MAX_FILE_SIZE_MB}MB e foi ignorado.`);
-        return Promise.resolve();
+        setUploadError(`"${file.name}" excede ${MAX_FILE_SIZE_MB}MB.`);
+        continue;
       }
-      return new Promise<void>(resolve => {
-        const reader = new FileReader();
-        reader.onload = ev => {
-          const data = ev.target?.result as string;
-          const att: StudyAttachment = {
-            id: crypto.randomUUID(),
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            data,
-            addedAt: new Date().toISOString(),
-          };
-          addAttachment(selected, att);
-          resolve();
-        };
-        reader.readAsDataURL(file);
-      });
-    });
-    Promise.all(promises).then(() => {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    });
-  }
-
-  function handleDeleteAttachment(id: string) {
-    if (window.confirm('Eliminar este anexo?')) {
-      deleteAttachment(selected, id);
+      const result = await uploadAttachment(selected, file);
+      if (!result) {
+        setUploadError(`Erro ao carregar "${file.name}". Tenta novamente.`);
+      }
     }
+
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
-  function handleOpenAttachment(att: StudyAttachment) {
-    const link = document.createElement('a');
-    link.href = att.data;
-    link.download = att.name;
-    link.click();
+  async function handleDeleteAttachment(id: string) {
+    if (window.confirm('Eliminar este anexo?')) {
+      await deleteAttachment(selected, id);
+    }
   }
 
   const cfg = TOUR_TYPES[selected];
@@ -281,11 +263,11 @@ export default function StudyView() {
             {/* Upload zone */}
             <div
               className="border-2 border-dashed border-black/[0.12] dark:border-white/[0.12] rounded-2xl p-6 text-center hover:border-primary dark:hover:border-primary transition-colors cursor-pointer"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => !uploading && fileInputRef.current?.click()}
               onDragOver={e => e.preventDefault()}
               onDrop={e => {
                 e.preventDefault();
-                if (fileInputRef.current) {
+                if (fileInputRef.current && !uploading) {
                   const dt = e.dataTransfer;
                   const event = { target: { files: dt.files } } as unknown as React.ChangeEvent<HTMLInputElement>;
                   handleFileChange(event);
@@ -293,9 +275,14 @@ export default function StudyView() {
               }}
             >
               <div className="text-3xl mb-2">📎</div>
-              <p className="text-sm font-medium text-ink dark:text-[#e8e5e0] mb-1">Arrasta ficheiros ou clica para adicionar</p>
-              <p className="text-xs text-[#6b6b6b] dark:text-[#888]">PDF, imagens, Word, Excel — máx. {MAX_FILE_SIZE_MB}MB por ficheiro</p>
-              {uploading && <p className="text-xs text-primary mt-2 animate-pulse">A carregar...</p>}
+              {uploading ? (
+                <p className="text-sm font-medium text-primary animate-pulse">A carregar para a nuvem...</p>
+              ) : (
+                <>
+                  <p className="text-sm font-medium text-ink dark:text-[#e8e5e0] mb-1">Arrasta ficheiros ou clica para adicionar</p>
+                  <p className="text-xs text-[#6b6b6b] dark:text-[#888]">PDF, imagens, Word, Excel — máx. {MAX_FILE_SIZE_MB}MB por ficheiro</p>
+                </>
+              )}
             </div>
             <input
               ref={fileInputRef}
@@ -305,6 +292,13 @@ export default function StudyView() {
               className="hidden"
               onChange={handleFileChange}
             />
+
+            {uploadError && (
+              <div className="px-4 py-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm text-red-600 dark:text-red-400 flex items-center justify-between">
+                <span>{uploadError}</span>
+                <button onClick={() => setUploadError(null)} className="ml-2 text-red-400 hover:text-red-600">✕</button>
+              </div>
+            )}
 
             {attachments.length === 0 ? (
               <p className="text-center text-sm text-[#6b6b6b] dark:text-[#888] py-6">Nenhum anexo ainda.</p>
@@ -322,16 +316,18 @@ export default function StudyView() {
                       </p>
                     </div>
                     {att.type.startsWith('image/') && (
-                      <img src={att.data} alt={att.name} className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                      <img src={att.url} alt={att.name} className="w-10 h-10 rounded-lg object-cover shrink-0" />
                     )}
                     <div className="flex gap-1 shrink-0">
-                      <button
-                        onClick={() => handleOpenAttachment(att)}
+                      <a
+                        href={att.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-black/[0.05] dark:hover:bg-white/[0.06] text-[#6b6b6b] dark:text-[#888] hover:text-ink dark:hover:text-[#e8e5e0] transition-colors"
-                        title="Descarregar"
+                        title="Abrir"
                       >
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                      </button>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                      </a>
                       <button
                         onClick={() => handleDeleteAttachment(att.id)}
                         className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-[#6b6b6b] dark:text-[#888] hover:text-red-500 transition-colors"

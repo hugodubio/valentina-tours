@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { TourType } from '../types/tour';
 import type { StudyDoc, StudySection, StudyAttachment } from '../types/study';
+import { supabase, BUCKET } from '../lib/supabase';
 
 const STORAGE_KEY = 'valentina_study';
 
@@ -74,7 +75,33 @@ export function useStudy() {
     return section.id;
   }, []);
 
-  const addAttachment = useCallback((tourType: TourType, attachment: StudyAttachment) => {
+  const uploadAttachment = useCallback(async (tourType: TourType, file: File): Promise<StudyAttachment | null> => {
+    const id = crypto.randomUUID();
+    const ext = file.name.split('.').pop() ?? '';
+    const path = `${tourType}/${id}.${ext}`;
+
+    const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+    });
+
+    if (error) {
+      console.error('Upload error:', error.message);
+      return null;
+    }
+
+    const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
+
+    const attachment: StudyAttachment = {
+      id,
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      url: urlData.publicUrl,
+      path,
+      addedAt: new Date().toISOString(),
+    };
+
     setDocs(prev => {
       const existing = prev[tourType] ?? emptyDoc(tourType);
       const next: StudyDoc = {
@@ -86,12 +113,21 @@ export function useStudy() {
       save(updated);
       return updated;
     });
+
+    return attachment;
   }, []);
 
-  const deleteAttachment = useCallback((tourType: TourType, attachmentId: string) => {
+  const deleteAttachment = useCallback(async (tourType: TourType, attachmentId: string) => {
     setDocs(prev => {
       const existing = prev[tourType];
       if (!existing) return prev;
+
+      const attachment = existing.attachments.find(a => a.id === attachmentId);
+      if (attachment?.path) {
+        // Delete from Supabase Storage (fire-and-forget)
+        supabase.storage.from(BUCKET).remove([attachment.path]).catch(console.error);
+      }
+
       const next: StudyDoc = {
         ...existing,
         attachments: existing.attachments.filter(a => a.id !== attachmentId),
@@ -103,5 +139,5 @@ export function useStudy() {
     });
   }, []);
 
-  return { docs, upsertSection, deleteSection, addSection, addAttachment, deleteAttachment };
+  return { docs, upsertSection, deleteSection, addSection, uploadAttachment, deleteAttachment };
 }

@@ -5,7 +5,8 @@ export interface StudyAttachment {
   name: string;
   type: string;       // MIME type
   size: number;       // bytes
-  data: string;       // base64
+  url: string;        // Supabase Storage public URL
+  path: string;       // storage path for deletion
   addedAt: string;
 }
 
