@@ -6,15 +6,16 @@ export default {
     extend: {
       colors: {
         primary: '#002FA7',
-        surface: '#F8F9FF',
+        surface: '#EDEAE4',
         ink: '#1a1814',
+        warm: '#F5F3EF',
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
       },
       boxShadow: {
-        card: '0 1px 3px rgba(26,24,20,0.06), 0 1px 2px rgba(26,24,20,0.04)',
-        modal: '0 8px 32px rgba(26,24,20,0.12)',
+        card: '0 1px 3px rgba(26,24,20,0.10), 0 1px 2px rgba(26,24,20,0.06)',
+        modal: '0 8px 40px rgba(26,24,20,0.18)',
       },
     },
   },

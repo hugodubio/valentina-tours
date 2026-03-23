@@ -7,9 +7,9 @@
 
   body {
     margin: 0;
-    background: #fff;
+    background: #F5F3EF;
     color: #1a1814;
-    font-family: 'Instrument Sans', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     -webkit-font-smoothing: antialiased;
     transition: background-color 0.2s, color 0.2s;
   }

@@ -70,7 +70,7 @@ export default function App() {
   const showAddButton = view !== 'study';
 
   return (
-    <div className="flex min-h-dvh bg-white dark:bg-[#0f0f0f] transition-colors">
+    <div className="flex min-h-dvh bg-warm dark:bg-[#0f0f0f] transition-colors">
       <Sidebar view={view} onViewChange={setView} darkMode={darkMode} onToggleDark={() => setDarkMode(d => !d)} />
 
       <main className="flex-1 px-4 md:px-8 py-6 md:py-8 pb-24 md:pb-8 min-w-0">
