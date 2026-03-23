@@ -10,7 +10,7 @@ export default {
         ink: '#1a1814',
       },
       fontFamily: {
-        sans: ['"Instrument Sans"', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
       },
       boxShadow: {
         card: '0 1px 3px rgba(26,24,20,0.06), 0 1px 2px rgba(26,24,20,0.04)',

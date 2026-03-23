@@ -178,7 +178,7 @@ export default function StudyView() {
               <div className="text-center py-12">
                 <div className="text-4xl mb-3">📚</div>
                 <p className="text-sm text-[#6b6b6b] dark:text-[#888] mb-4">Ainda não há notas para este tour.</p>
-                <button onClick={() => setAddingSection(true)} className="px-4 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-[#0025a0] transition-colors min-h-[44px]">
+                <button onClick={() => setAddingSection(true)} className="px-4 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-[#0025a0] transition-colors cursor-pointer min-h-[44px]">
                   + Adicionar secção
                 </button>
               </div>
