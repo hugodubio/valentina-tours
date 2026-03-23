@@ -57,9 +57,9 @@ export default function Sidebar({ view, onViewChange, darkMode, onToggleDark }: 
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-black/[0.08] dark:border-white/[0.08] min-h-screen bg-[#FDFCF9] dark:bg-[#111] px-4 py-8 transition-colors">
+      <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-black/[0.08] dark:border-white/[0.08] min-h-screen bg-sidebar dark:bg-[#111] px-4 py-8 transition-colors">
         <div className="mb-10 px-3">
-          <h1 className="text-[22px] font-bold text-ink dark:text-[#e8e5e0] leading-tight">Valentina</h1>
+          <div className="text-[22px] font-semibold text-ink dark:text-[#e8e5e0] leading-tight">Valentina</div>
           <span className="text-[11px] font-medium tracking-wide text-[#6b6b6b] dark:text-[#888]">Walking Tours</span>
         </div>
 
@@ -90,7 +90,7 @@ export default function Sidebar({ view, onViewChange, darkMode, onToggleDark }: 
       </aside>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-[#FDFCF9] dark:bg-[#111] border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-around px-2 pb-safe transition-colors"
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-sidebar dark:bg-[#111] border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-around px-2 pb-safe transition-colors"
         style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
       >
         {NAV_ITEMS.map(item => (

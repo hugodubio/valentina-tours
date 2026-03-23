@@ -9,6 +9,7 @@ export default {
         surface: '#EDEAE4',
         ink: '#1a1814',
         warm: '#F5F3EF',
+        sidebar: '#FDFCF9',
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
