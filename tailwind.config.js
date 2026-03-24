@@ -13,6 +13,7 @@ export default {
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+        display: ['Syne', 'sans-serif'],
       },
       boxShadow: {
         card: '0 1px 3px rgba(26,24,20,0.10), 0 1px 2px rgba(26,24,20,0.06)',

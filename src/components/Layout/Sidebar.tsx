@@ -63,8 +63,8 @@ export default function Sidebar({ view, onViewChange, darkMode, onToggleDark }: 
         <div className="mb-10 px-3 flex items-center gap-2.5">
           <img src={config.logoPath} alt="Logo" className="w-14 h-14 rounded-2xl shrink-0 object-cover" />
           <div>
-            <div className="text-[22px] font-semibold text-primary leading-tight">{config.name}</div>
-            <span className="text-[11px] font-medium tracking-wide text-[#6b6b6b] dark:text-[#888]">{config.subtitle}</span>
+            <div className="font-display text-[18px] font-bold text-primary leading-none tracking-tight">{config.name}</div>
+            <span className="text-[10px] font-medium tracking-[0.12em] uppercase text-[#6b6b6b] dark:text-[#888] mt-0.5 block">{config.subtitle}</span>
           </div>
         </div>
 
