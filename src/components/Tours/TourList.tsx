@@ -24,7 +24,10 @@ const TrashIcon = () => (
 export default function TourList({ tours, onEdit, onDelete }: Props) {
   const [filter, setFilter] = useState<TourType | 'all'>('all');
 
-  const filtered = [...tours]
+  const today = new Date().toISOString().slice(0, 10);
+  const pastTours = tours.filter(t => t.date <= today);
+
+  const filtered = [...pastTours]
     .filter(t => filter === 'all' || t.type === filter)
     .sort((a, b) => b.date.localeCompare(a.date));
 
@@ -34,7 +37,7 @@ export default function TourList({ tours, onEdit, onDelete }: Props) {
     }
   }
 
-  const isPending = (t: Tour) => !t.participants && !t.revenueTotal;
+  const isPending = (t: Tour) => !t.revenueTotal;
 
   return (
     <div>
@@ -46,10 +49,10 @@ export default function TourList({ tours, onEdit, onDelete }: Props) {
             filter === 'all' ? 'bg-primary text-white' : 'bg-black/[0.05] dark:bg-white/[0.06] text-[#6b6b6b] dark:text-[#888] hover:text-ink dark:hover:text-[#e8e5e0]'
           }`}
         >
-          Todos ({tours.length})
+          Todos ({pastTours.length})
         </button>
         {Object.entries(TOUR_TYPES).map(([key, cfg]) => {
-          const count = tours.filter(t => t.type === key).length;
+          const count = pastTours.filter(t => t.type === key).length;
           return (
             <button
               key={key}
@@ -67,7 +70,9 @@ export default function TourList({ tours, onEdit, onDelete }: Props) {
 
       {filtered.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-sm text-[#6b6b6b] dark:text-[#888]">Nenhum tour encontrado.</p>
+          <p className="text-sm text-[#6b6b6b] dark:text-[#888]">
+          {pastTours.length === 0 ? 'Nenhum tour passado ainda. Agenda tours no Calendário!' : 'Nenhum tour encontrado.'}
+        </p>
         </div>
       ) : (
         <>

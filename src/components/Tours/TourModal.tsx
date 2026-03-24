@@ -46,7 +46,10 @@ export default function TourModal({ initialDate, tour, onSave, onClose }: Props)
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  const hasFinance = form.participants !== '' && form.revenueTotal !== '';
+  const today = new Date().toISOString().slice(0, 10);
+  const isPastOrToday = form.date !== '' && form.date <= today;
+
+  const hasFinance = isPastOrToday && form.participants !== '' && form.revenueTotal !== '';
   const finance = hasFinance
     ? calcTourFinance({ participants: Number(form.participants), revenueTotal: Number(form.revenueTotal), id: '', date: '', time: '', type: form.type, createdAt: '' })
     : null;
@@ -116,31 +119,30 @@ export default function TourModal({ initialDate, tour, onSave, onClose }: Props)
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1.5">
-              <label className={labelCls}>Participantes</label>
-              <input
-                type="number" min={1} placeholder="—"
-                value={form.participants}
-                onChange={e => set('participants', e.target.value === '' ? '' : Math.max(1, parseInt(e.target.value)))}
-                className={inputCls}
-              />
+          {isPastOrToday ? (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <label className={labelCls}>Participantes</label>
+                <input
+                  type="number" min={1} placeholder="—"
+                  value={form.participants}
+                  onChange={e => set('participants', e.target.value === '' ? '' : Math.max(1, parseInt(e.target.value)))}
+                  className={inputCls}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className={labelCls}>Total recebido €</label>
+                <input
+                  type="number" min={0} step={0.01} placeholder="—"
+                  value={form.revenueTotal}
+                  onChange={e => set('revenueTotal', e.target.value === '' ? '' : parseFloat(e.target.value))}
+                  className={inputCls}
+                />
+              </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className={labelCls}>Total recebido €</label>
-              <input
-                type="number" min={0} step={0.01} placeholder="—"
-                value={form.revenueTotal}
-                onChange={e => set('revenueTotal', e.target.value === '' ? '' : parseFloat(e.target.value))}
-                className={inputCls}
-              />
-            </div>
-          </div>
-
-          {/* Hint for donation-based */}
-          {!hasFinance && (
-            <p className="text-[11px] text-[#6b6b6b] dark:text-[#666] -mt-1">
-              Os valores financeiros podem ser preenchidos depois do tour.
+          ) : (
+            <p className="text-[11px] text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-xl px-3 py-2.5">
+              Tour futuro — participantes e valor a preencher no dia do tour.
             </p>
           )}
 
