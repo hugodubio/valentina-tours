@@ -6,5 +6,5 @@ export const valentina: AppConfig = {
   primaryColor: '#002FA7',
   primaryHover: '#0025A0',
   storagePrefix: 'valentina',
-  logoPath: '/valentina-tours/icon-192.png',
+  logoPath: '/icon-192.png',
 };

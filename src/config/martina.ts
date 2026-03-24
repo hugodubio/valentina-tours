@@ -6,5 +6,5 @@ export const martina: AppConfig = {
   primaryColor: '#E8500A',
   primaryHover: '#C94408',
   storagePrefix: 'martina',
-  logoPath: '/valentina-tours/martina-icon.jpg',
+  logoPath: '/martina-icon.jpg',
 };
