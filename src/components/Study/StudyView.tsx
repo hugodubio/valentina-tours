@@ -178,7 +178,7 @@ export default function StudyView() {
               <div className="text-center py-12">
                 <div className="text-4xl mb-3">📚</div>
                 <p className="text-sm text-[#6b6b6b] dark:text-[#888] mb-4">Ainda não há notas para este tour.</p>
-                <button onClick={() => setAddingSection(true)} className="px-4 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-[#0025a0] transition-colors cursor-pointer min-h-[44px]">
+                <button onClick={() => setAddingSection(true)} className="px-4 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-[var(--color-primary-hover)] transition-colors cursor-pointer min-h-[44px]">
                   + Adicionar secção
                 </button>
               </div>
@@ -245,7 +245,7 @@ export default function StudyView() {
                   className="w-full text-sm text-ink dark:text-[#e8e5e0] bg-transparent focus:outline-none mb-3 border-b border-black/[0.1] dark:border-white/[0.1] pb-2"
                 />
                 <div className="flex gap-2">
-                  <button onClick={handleAddSection} disabled={!newSectionTitle.trim()} className="px-4 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-[#0025a0] transition-colors disabled:opacity-40 min-h-[40px]">Criar</button>
+                  <button onClick={handleAddSection} disabled={!newSectionTitle.trim()} className="px-4 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-40 min-h-[40px]">Criar</button>
                   <button onClick={() => { setAddingSection(false); setNewSectionTitle(''); }} className="px-4 py-2 border border-black/[0.12] dark:border-white/[0.12] text-sm text-[#6b6b6b] dark:text-[#888] rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors min-h-[40px]">Cancelar</button>
                 </div>
               </div>

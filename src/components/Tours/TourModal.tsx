@@ -171,7 +171,7 @@ export default function TourModal({ initialDate, tour, onSave, onClose }: Props)
             <button type="button" onClick={onClose} className="flex-1 py-3 rounded-xl border border-black/[0.12] dark:border-white/[0.12] text-sm font-medium text-[#6b6b6b] dark:text-[#888] hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors min-h-[44px]">
               Cancelar
             </button>
-            <button type="submit" className="flex-1 py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-[#0025a0] transition-colors min-h-[44px]">
+            <button type="submit" className="flex-1 py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-[var(--color-primary-hover)] transition-colors min-h-[44px]">
               {tour ? 'Guardar' : 'Adicionar'}
             </button>
           </div>

@@ -2,8 +2,9 @@ import { useState, useCallback } from 'react';
 import type { TourType } from '../types/tour';
 import type { StudyDoc, StudySection, StudyAttachment } from '../types/study';
 import { supabase, BUCKET } from '../lib/supabase';
+import { config } from '../config';
 
-const STORAGE_KEY = 'valentina_study';
+const STORAGE_KEY = `${config.storagePrefix}_study`;
 
 type StudyStore = Partial<Record<TourType, StudyDoc>>;
 

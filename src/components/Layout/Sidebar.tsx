@@ -1,3 +1,5 @@
+import { config } from '../../config';
+
 type View = 'calendar' | 'list' | 'finance' | 'study';
 
 interface Props {
@@ -59,10 +61,10 @@ export default function Sidebar({ view, onViewChange, darkMode, onToggleDark }: 
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-black/[0.08] dark:border-white/[0.08] min-h-screen bg-sidebar dark:bg-[#111] px-4 py-8 transition-colors">
         <div className="mb-10 px-3 flex items-center gap-2.5">
-          <img src="/valentina-tours/icon-192.png" alt="Logo" className="w-14 h-14 rounded-2xl shrink-0" />
+          <img src={config.logoPath} alt="Logo" className="w-14 h-14 rounded-2xl shrink-0 object-cover" />
           <div>
-            <div className="text-[22px] font-semibold text-primary leading-tight">Valentina</div>
-            <span className="text-[11px] font-medium tracking-wide text-[#6b6b6b] dark:text-[#888]">Walking Tours</span>
+            <div className="text-[22px] font-semibold text-primary leading-tight">{config.name}</div>
+            <span className="text-[11px] font-medium tracking-wide text-[#6b6b6b] dark:text-[#888]">{config.subtitle}</span>
           </div>
         </div>
 
@@ -92,6 +94,14 @@ export default function Sidebar({ view, onViewChange, darkMode, onToggleDark }: 
         </button>
       </aside>
 
+      <button
+        onClick={onToggleDark}
+        className="md:hidden fixed top-3 right-3 z-50 w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-[#1a1a1a] border border-black/[0.1] dark:border-white/[0.1] shadow-card text-[#6b6b6b] dark:text-[#888] transition-colors"
+        aria-label={darkMode ? 'Modo claro' : 'Modo escuro'}
+      >
+        {darkMode ? <SunIcon /> : <MoonIcon />}
+      </button>
+
       {/* Mobile bottom nav */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-sidebar dark:bg-[#111] border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-around px-2 pb-safe transition-colors"
         style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
@@ -110,13 +120,6 @@ export default function Sidebar({ view, onViewChange, darkMode, onToggleDark }: 
             <span className="text-[10px] font-medium">{item.label}</span>
           </button>
         ))}
-        <button
-          onClick={onToggleDark}
-          className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-[#999] dark:text-[#666] transition-all min-w-[56px] min-h-[56px] justify-center"
-        >
-          {darkMode ? <SunIcon /> : <MoonIcon />}
-          <span className="text-[10px] font-medium">{darkMode ? 'Claro' : 'Escuro'}</span>
-        </button>
       </nav>
     </>
   );

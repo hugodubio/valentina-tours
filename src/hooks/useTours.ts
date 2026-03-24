@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import type { Tour } from '../types/tour';
+import { config } from '../config';
 
-const STORAGE_KEY = 'valentina_tours';
+const STORAGE_KEY = `${config.storagePrefix}_tours`;
 
 function load(): Tour[] {
   try {

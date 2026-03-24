@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { config } from './config';
 import type { Tour } from './types/tour';
 import { useTours } from './hooks/useTours';
 import Sidebar from './components/Layout/Sidebar';
@@ -34,14 +35,14 @@ export default function App() {
 
   // Dark mode
   const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('valentina_dark');
+    const saved = localStorage.getItem(`${config.storagePrefix}_dark`);
     if (saved !== null) return saved === 'true';
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
-    localStorage.setItem('valentina_dark', String(darkMode));
+    localStorage.setItem(`${config.storagePrefix}_dark`, String(darkMode));
   }, [darkMode]);
 
   function openNew(date?: string) {
@@ -80,7 +81,7 @@ export default function App() {
             showAddButton ? (
               <button
                 onClick={() => openNew()}
-                className="flex items-center gap-2 px-3.5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-[#0025a0] transition-colors min-h-[44px]"
+                className="flex items-center gap-2 px-3.5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-[var(--color-primary-hover)] transition-colors min-h-[44px]"
               >
                 <PlusIcon />
                 <span className="hidden sm:inline">Novo tour</span>
