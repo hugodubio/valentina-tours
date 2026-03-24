@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { config } from './config';
+import { exportToursExcel } from './utils/exportExcel';
 import type { Tour } from './types/tour';
 import { useTours } from './hooks/useTours';
 import Sidebar from './components/Layout/Sidebar';
@@ -24,6 +25,12 @@ interface ModalState {
 const PlusIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+);
+
+const ExportIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
   </svg>
 );
 
@@ -78,7 +85,15 @@ export default function App() {
         <Header
           title={viewTitles[view]}
           action={
-            showAddButton ? (
+            view === 'finance' ? (
+              <button
+                onClick={() => exportToursExcel(tours, config.storagePrefix)}
+                className="flex items-center gap-2 px-3.5 py-2.5 border border-black/[0.12] dark:border-white/[0.12] text-ink dark:text-[#e8e5e0] text-sm font-semibold rounded-xl hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors min-h-[44px]"
+              >
+                <ExportIcon />
+                <span className="hidden sm:inline">Exportar Excel</span>
+              </button>
+            ) : showAddButton ? (
               <button
                 onClick={() => openNew()}
                 className="flex items-center gap-2 px-3.5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-[var(--color-primary-hover)] transition-colors min-h-[44px]"
