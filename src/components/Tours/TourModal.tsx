@@ -15,7 +15,7 @@ interface FormState {
   time: string;
   type: TourType;
   participants: number | '';
-  revenuePerPerson: number | '';
+  revenueTotal: number | '';
   notes: string;
 }
 
@@ -27,7 +27,7 @@ export default function TourModal({ initialDate, tour, onSave, onClose }: Props)
           time: tour.time,
           type: tour.type,
           participants: tour.participants || '',
-          revenuePerPerson: tour.revenuePerPerson || '',
+          revenueTotal: tour.revenueTotal || '',
           notes: tour.notes ?? '',
         }
       : {
@@ -35,7 +35,7 @@ export default function TourModal({ initialDate, tour, onSave, onClose }: Props)
           time: '',
           type: 'chiado',
           participants: '',
-          revenuePerPerson: '',
+          revenueTotal: '',
           notes: '',
         }
   );
@@ -46,9 +46,9 @@ export default function TourModal({ initialDate, tour, onSave, onClose }: Props)
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  const hasFinance = form.participants !== '' && form.revenuePerPerson !== '';
+  const hasFinance = form.participants !== '' && form.revenueTotal !== '';
   const finance = hasFinance
-    ? calcTourFinance({ participants: Number(form.participants), revenuePerPerson: Number(form.revenuePerPerson), id: '', date: '', time: '', type: form.type, createdAt: '' })
+    ? calcTourFinance({ participants: Number(form.participants), revenueTotal: Number(form.revenueTotal), id: '', date: '', time: '', type: form.type, createdAt: '' })
     : null;
 
   function set<K extends keyof FormState>(k: K, v: FormState[K]) {
@@ -64,7 +64,7 @@ export default function TourModal({ initialDate, tour, onSave, onClose }: Props)
           time: form.time,
           type: form.type,
           participants: form.participants === '' ? 0 : Number(form.participants),
-          revenuePerPerson: form.revenuePerPerson === '' ? 0 : Number(form.revenuePerPerson),
+          revenueTotal: form.revenueTotal === '' ? 0 : Number(form.revenueTotal),
           notes: form.notes,
         }
       : {
@@ -74,7 +74,7 @@ export default function TourModal({ initialDate, tour, onSave, onClose }: Props)
           time: form.time,
           type: form.type,
           participants: form.participants === '' ? 0 : Number(form.participants),
-          revenuePerPerson: form.revenuePerPerson === '' ? 0 : Number(form.revenuePerPerson),
+          revenueTotal: form.revenueTotal === '' ? 0 : Number(form.revenueTotal),
           notes: form.notes,
         };
     onSave(saved);
@@ -127,11 +127,11 @@ export default function TourModal({ initialDate, tour, onSave, onClose }: Props)
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className={labelCls}>Valor recebido €</label>
+              <label className={labelCls}>Total recebido €</label>
               <input
                 type="number" min={0} step={0.01} placeholder="—"
-                value={form.revenuePerPerson}
-                onChange={e => set('revenuePerPerson', e.target.value === '' ? '' : parseFloat(e.target.value))}
+                value={form.revenueTotal}
+                onChange={e => set('revenueTotal', e.target.value === '' ? '' : parseFloat(e.target.value))}
                 className={inputCls}
               />
             </div>

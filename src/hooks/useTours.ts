@@ -6,7 +6,15 @@ const STORAGE_KEY = 'valentina_tours';
 function load(): Tour[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Tour[]) : [];
+    if (!raw) return [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (JSON.parse(raw) as any[]).map(t => {
+      if ('revenuePerPerson' in t && !('revenueTotal' in t)) {
+        const { revenuePerPerson, ...rest } = t;
+        return { ...rest, revenueTotal: (revenuePerPerson as number) * (t.participants as number || 1) };
+      }
+      return t as Tour;
+    });
   } catch {
     return [];
   }

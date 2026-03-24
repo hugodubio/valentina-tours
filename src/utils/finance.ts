@@ -2,7 +2,7 @@ import type { Tour } from '../types/tour';
 import { AGGREGATOR_FEE_PER_PERSON } from '../constants/finance';
 
 export function calcTourFinance(tour: Tour) {
-  const grossRevenue = tour.participants * tour.revenuePerPerson;
+  const grossRevenue = tour.revenueTotal;
   const aggregatorFee = tour.participants * AGGREGATOR_FEE_PER_PERSON;
   const netRevenue = grossRevenue - aggregatorFee;
   return { grossRevenue, aggregatorFee, netRevenue };

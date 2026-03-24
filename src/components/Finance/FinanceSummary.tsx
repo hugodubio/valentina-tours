@@ -45,7 +45,7 @@ export default function FinanceSummary({ tours }: Props) {
   const weekEnd = toISODate(endOfWeek(today, { weekStartsOn: 1 }));
 
   // Only include tours with financial data
-  const withData = tours.filter(t => t.participants > 0 && t.revenuePerPerson > 0);
+  const withData = tours.filter(t => t.participants > 0 && t.revenueTotal > 0);
 
   const thisMonth = withData.filter(t => t.date.startsWith(monthStr));
   const thisWeek = withData.filter(t => t.date >= weekStart && t.date <= weekEnd);

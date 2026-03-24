@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function FinanceTable({ tours: allTours }: Props) {
-  const withData = allTours.filter(t => t.participants > 0 && t.revenuePerPerson > 0);
+  const withData = allTours.filter(t => t.participants > 0 && t.revenueTotal > 0);
 
   if (withData.length === 0) {
     return (
@@ -67,7 +67,7 @@ export default function FinanceTable({ tours: allTours }: Props) {
                     <div className="divide-y divide-black/[0.05] dark:divide-white/[0.05]">
                       {weekTours.map(t => {
                         const cfg = TOUR_TYPES[t.type];
-                        const net = (t.participants * t.revenuePerPerson) - (t.participants * 4.20);
+                        const net = t.revenueTotal - (t.participants * 4.20);
                         return (
                           <div key={t.id} className="flex items-center px-4 py-2.5 gap-3 text-sm bg-white dark:bg-[#111]">
                             <span className="text-[#6b6b6b] dark:text-[#888] w-16 shrink-0 text-xs">{t.date.slice(8)} {format(parseISODate(t.date), 'EEE', { locale: pt })}</span>

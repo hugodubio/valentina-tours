@@ -6,7 +6,7 @@ export interface Tour {
   time: string;        // "HH:MM"
   type: TourType;
   participants: number;
-  revenuePerPerson: number;
+  revenueTotal: number;
   notes?: string;
   createdAt: string;
 }

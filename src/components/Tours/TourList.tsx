@@ -34,7 +34,7 @@ export default function TourList({ tours, onEdit, onDelete }: Props) {
     }
   }
 
-  const isPending = (t: Tour) => !t.participants && !t.revenuePerPerson;
+  const isPending = (t: Tour) => !t.participants && !t.revenueTotal;
 
   return (
     <div>
@@ -74,7 +74,7 @@ export default function TourList({ tours, onEdit, onDelete }: Props) {
           {/* Mobile card view */}
           <div className="md:hidden flex flex-col gap-3">
             {filtered.map(t => {
-              const fin = t.participants && t.revenuePerPerson ? calcTourFinance(t) : null;
+              const fin = t.participants && t.revenueTotal ? calcTourFinance(t) : null;
               const cfg = TOUR_TYPES[t.type];
               const pending = isPending(t);
               return (
@@ -128,7 +128,7 @@ export default function TourList({ tours, onEdit, onDelete }: Props) {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-black/[0.08] dark:border-white/[0.08]">
-                  {['Data', 'Hora', 'Tour', 'Part.', 'Bruto', 'Taxa', 'Líquido', 'Notas', ''].map(h => (
+                  {['Data', 'Hora', 'Tour', 'Part.', 'Total', 'Taxa', 'Líquido', 'Notas', ''].map(h => (
                     <th key={h} className="text-left text-[11px] font-semibold uppercase tracking-wide text-[#6b6b6b] dark:text-[#888] pb-2.5 pr-4 whitespace-nowrap">
                       {h}
                     </th>
@@ -137,7 +137,7 @@ export default function TourList({ tours, onEdit, onDelete }: Props) {
               </thead>
               <tbody>
                 {filtered.map(t => {
-                  const fin = t.participants && t.revenuePerPerson ? calcTourFinance(t) : null;
+                  const fin = t.participants && t.revenueTotal ? calcTourFinance(t) : null;
                   const cfg = TOUR_TYPES[t.type];
                   const pending = isPending(t);
                   return (
