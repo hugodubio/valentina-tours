@@ -1,0 +1,24 @@
+{
+  "name": "Valentina Walking Tours",
+  "short_name": "Valentina",
+  "description": "Gestão de tours para guia de walking tours em Lisboa",
+  "start_url": "/valentina-tours/",
+  "display": "standalone",
+  "background_color": "#F5F3EF",
+  "theme_color": "#002FA7",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/valentina-tours/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/valentina-tours/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
