@@ -22,7 +22,8 @@
     </div>
     <script>
       (function() {
-        var user = localStorage.getItem('app_user');
+        var urlParam = new URLSearchParams(window.location.search).get('user');
+        var user = urlParam || localStorage.getItem('app_user') || 'valentina';
         if (user === 'martina') {
           var el = document.getElementById('splash-logo');
           if (el) el.src = '/martina-icon.jpg';
