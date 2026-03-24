@@ -58,9 +58,12 @@ export default function Sidebar({ view, onViewChange, darkMode, onToggleDark }: 
     <>
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-black/[0.08] dark:border-white/[0.08] min-h-screen bg-sidebar dark:bg-[#111] px-4 py-8 transition-colors">
-        <div className="mb-10 px-3">
-          <div className="text-[22px] font-semibold text-ink dark:text-[#e8e5e0] leading-tight">Valentina</div>
-          <span className="text-[11px] font-medium tracking-wide text-[#6b6b6b] dark:text-[#888]">Walking Tours</span>
+        <div className="mb-10 px-3 flex items-center gap-2.5">
+          <img src="/valentina-tours/icon-192.png" alt="Logo" className="w-9 h-9 rounded-xl shrink-0" />
+          <div>
+            <div className="text-[22px] font-semibold text-primary leading-tight">Valentina</div>
+            <span className="text-[11px] font-medium tracking-wide text-[#6b6b6b] dark:text-[#888]">Walking Tours</span>
+          </div>
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">
