@@ -8,3 +8,12 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 )
+
+// Fade out splash screen after app is ready
+setTimeout(() => {
+  const splash = document.getElementById('splash');
+  if (splash) {
+    splash.style.opacity = '0';
+    setTimeout(() => splash.remove(), 600);
+  }
+}, 1400);
