@@ -11,6 +11,8 @@ import TourList from './components/Tours/TourList';
 import TourModal from './components/Tours/TourModal';
 import FinanceSummary from './components/Finance/FinanceSummary';
 import FinanceTable from './components/Finance/FinanceTable';
+import TourTypeStats from './components/Finance/TourTypeStats';
+import RevenueCharts from './components/Finance/RevenueCharts';
 import StudyView from './components/Study/StudyView';
 
 type View = 'calendar' | 'list' | 'finance' | 'study';
@@ -138,6 +140,8 @@ export default function App() {
         {view === 'finance' && (
           <div>
             <FinanceSummary tours={tours} />
+            <TourTypeStats tours={tours} />
+            <RevenueCharts tours={tours} />
             <FinanceTable tours={tours} />
           </div>
         )}

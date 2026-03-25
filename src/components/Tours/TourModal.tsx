@@ -19,7 +19,15 @@ interface FormState {
   notes: string;
 }
 
+function validateTime(value: string): string {
+  if (value === '') return '';
+  const pattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  if (!pattern.test(value)) return 'Formato inválido. Usa HH:MM (ex: 09:30)';
+  return '';
+}
+
 export default function TourModal({ initialDate, tour, onSave, onClose }: Props) {
+  const [timeError, setTimeError] = useState('');
   const [form, setForm] = useState<FormState>(() =>
     tour
       ? {
@@ -60,6 +68,8 @@ export default function TourModal({ initialDate, tour, onSave, onClose }: Props)
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const err = validateTime(form.time);
+    if (err) { setTimeError(err); return; }
     const saved: Tour = tour
       ? {
           ...tour,
@@ -106,7 +116,18 @@ export default function TourModal({ initialDate, tour, onSave, onClose }: Props)
             </div>
             <div className="flex flex-col gap-1.5">
               <label className={labelCls}>Hora</label>
-              <input type="text" placeholder="09:30" value={form.time} onChange={e => set('time', e.target.value)} className={inputCls} />
+              <input
+                type="text"
+                placeholder="09:30"
+                value={form.time}
+                onChange={e => {
+                  set('time', e.target.value);
+                  if (timeError) setTimeError(validateTime(e.target.value));
+                }}
+                onBlur={e => setTimeError(validateTime(e.target.value))}
+                className={`${inputCls} ${timeError ? 'border-red-400 focus:ring-red-300 focus:border-red-400' : ''}`}
+              />
+              {timeError && <span className="text-[11px] text-red-500 -mt-1">{timeError}</span>}
             </div>
           </div>
 

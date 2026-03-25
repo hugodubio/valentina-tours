@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from 'date-fns';
 import type { Tour, TourType } from '../../types/tour';
 import { TOUR_TYPES } from '../../constants/tours';
 import { calcTourFinance, formatEur } from '../../utils/finance';
 import { formatDatePt, parseISODate } from '../../utils/dateHelpers';
+
+type DateFilter = 'all' | 'week' | 'month' | 'custom';
 
 interface Props {
   tours: Tour[];
@@ -23,11 +26,33 @@ const TrashIcon = () => (
 
 export default function TourList({ tours, onEdit, onDelete }: Props) {
   const [filter, setFilter] = useState<TourType | 'all'>('all');
+  const [dateFilter, setDateFilter] = useState<DateFilter>('all');
+  const [customFrom, setCustomFrom] = useState('');
+  const [customTo, setCustomTo] = useState('');
 
-  const today = new Date().toISOString().slice(0, 10);
-  const pastTours = tours.filter(t => t.date <= today);
+  const today = new Date();
+  const todayStr = format(today, 'yyyy-MM-dd');
+  const weekStart = format(startOfWeek(today, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+  const weekEnd = format(endOfWeek(today, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+  const monthStart = format(startOfMonth(today), 'yyyy-MM-dd');
+  const monthEnd = format(endOfMonth(today), 'yyyy-MM-dd');
 
-  const filtered = [...pastTours]
+  const pastTours = tours.filter(t => t.date <= todayStr);
+
+  function applyDateFilter(t: Tour): boolean {
+    if (dateFilter === 'week') return t.date >= weekStart && t.date <= weekEnd;
+    if (dateFilter === 'month') return t.date >= monthStart && t.date <= monthEnd;
+    if (dateFilter === 'custom') {
+      const from = customFrom || '0000-00-00';
+      const to = customTo || '9999-12-31';
+      return t.date >= from && t.date <= to;
+    }
+    return true;
+  }
+
+  const dateFilteredTours = pastTours.filter(applyDateFilter);
+
+  const filtered = [...dateFilteredTours]
     .filter(t => filter === 'all' || t.type === filter)
     .sort((a, b) => b.date.localeCompare(a.date));
 
@@ -41,31 +66,81 @@ export default function TourList({ tours, onEdit, onDelete }: Props) {
 
   return (
     <div>
-      {/* Filter pills */}
-      <div className="flex gap-2 mb-5 flex-wrap">
-        <button
-          onClick={() => setFilter('all')}
-          className={`px-3 py-2 rounded-xl text-xs font-semibold transition-colors min-h-[36px] ${
-            filter === 'all' ? 'bg-primary text-white' : 'bg-black/[0.05] dark:bg-white/[0.06] text-[#6b6b6b] dark:text-[#888] hover:text-ink dark:hover:text-[#e8e5e0]'
-          }`}
-        >
-          Todos ({pastTours.length})
-        </button>
-        {Object.entries(TOUR_TYPES).map(([key, cfg]) => {
-          const count = pastTours.filter(t => t.type === key).length;
-          return (
-            <button
-              key={key}
-              onClick={() => setFilter(key as TourType)}
-              className={`px-3 py-2 rounded-xl text-xs font-semibold transition-colors min-h-[36px] ${
-                filter === key ? 'text-white' : 'bg-black/[0.05] dark:bg-white/[0.06] text-[#6b6b6b] dark:text-[#888] hover:text-ink dark:hover:text-[#e8e5e0]'
-              }`}
-              style={filter === key ? { backgroundColor: cfg.color } : {}}
-            >
-              {cfg.label} ({count})
-            </button>
-          );
-        })}
+      {/* Filters */}
+      <div className="mb-5 flex flex-col gap-2">
+        {/* Date filter pills */}
+        <div className="flex gap-2 flex-wrap">
+          {(['all', 'week', 'month', 'custom'] as DateFilter[]).map(df => {
+            const labels: Record<DateFilter, string> = { all: 'Tudo', week: 'Esta semana', month: 'Este mês', custom: 'Personalizado' };
+            return (
+              <button
+                key={df}
+                onClick={() => setDateFilter(df)}
+                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-colors min-h-[36px] ${
+                  dateFilter === df
+                    ? 'bg-[#1a1814] dark:bg-[#e8e5e0] text-white dark:text-[#1a1814]'
+                    : 'bg-black/[0.05] dark:bg-white/[0.06] text-[#6b6b6b] dark:text-[#888] hover:text-ink dark:hover:text-[#e8e5e0]'
+                }`}
+              >
+                {labels[df]}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Custom date range inputs */}
+        {dateFilter === 'custom' && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <input
+              type="date"
+              value={customFrom}
+              onChange={e => setCustomFrom(e.target.value)}
+              className="border border-black/[0.12] dark:border-white/[0.12] rounded-xl px-3 py-2 text-xs text-ink dark:text-[#e8e5e0] bg-white dark:bg-[#1a1a1a] focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors min-h-[36px]"
+            />
+            <span className="text-xs text-[#6b6b6b] dark:text-[#888]">até</span>
+            <input
+              type="date"
+              value={customTo}
+              onChange={e => setCustomTo(e.target.value)}
+              className="border border-black/[0.12] dark:border-white/[0.12] rounded-xl px-3 py-2 text-xs text-ink dark:text-[#e8e5e0] bg-white dark:bg-[#1a1a1a] focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors min-h-[36px]"
+            />
+            {(customFrom || customTo) && (
+              <button
+                onClick={() => { setCustomFrom(''); setCustomTo(''); }}
+                className="text-xs text-[#6b6b6b] dark:text-[#888] hover:text-ink px-2 py-1 rounded-lg hover:bg-black/[0.05] dark:hover:bg-white/[0.06] transition-colors"
+              >
+                Limpar
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Tour type filter pills */}
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => setFilter('all')}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold transition-colors min-h-[36px] ${
+              filter === 'all' ? 'bg-primary text-white' : 'bg-black/[0.05] dark:bg-white/[0.06] text-[#6b6b6b] dark:text-[#888] hover:text-ink dark:hover:text-[#e8e5e0]'
+            }`}
+          >
+            Todos ({dateFilteredTours.length})
+          </button>
+          {Object.entries(TOUR_TYPES).map(([key, cfg]) => {
+            const count = dateFilteredTours.filter(t => t.type === key).length;
+            return (
+              <button
+                key={key}
+                onClick={() => setFilter(key as TourType)}
+                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-colors min-h-[36px] ${
+                  filter === key ? 'text-white' : 'bg-black/[0.05] dark:bg-white/[0.06] text-[#6b6b6b] dark:text-[#888] hover:text-ink dark:hover:text-[#e8e5e0]'
+                }`}
+                style={filter === key ? { backgroundColor: cfg.color } : {}}
+              >
+                {cfg.label} ({count})
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {filtered.length === 0 ? (
