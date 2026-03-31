@@ -1,48 +1,60 @@
 import * as XLSX from 'xlsx';
 import type { Tour } from '../types/tour';
 import { TOUR_TYPES } from '../constants/tours';
-import { AGGREGATOR_FEE_PER_PERSON } from '../constants/finance';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
+import { totalPax } from './finance';
 
 export function exportToursExcel(tours: Tour[], filename = 'tours') {
   const sorted = [...tours].sort((a, b) => a.date.localeCompare(b.date));
 
-  const rows = sorted.map(t => {
-    const fee = t.participants * AGGREGATOR_FEE_PER_PERSON;
-    const net = t.revenueTotal - fee;
-    return {
-      'Data': format(new Date(t.date), 'dd/MM/yyyy', { locale: pt }),
-      'Hora': t.time || '—',
-      'Tour': TOUR_TYPES[t.type].label,
-      'Pessoas': t.participants,
-      'Bruto (€)': +t.revenueTotal.toFixed(2),
-      'Comissão (€)': +fee.toFixed(2),
-      'Líquido (€)': +net.toFixed(2),
-      'Notas': t.notes ?? '',
-    };
-  });
+  const rows = sorted.map(t => ({
+    'Data': format(new Date(t.date), 'dd/MM/yyyy', { locale: pt }),
+    'Hora': t.time || '—',
+    'Tour': TOUR_TYPES[t.type].label,
+    'Tipo': t.isPrivate ? 'Privado' : 'Plataforma',
+    'Civitatis': t.paxCivitatis,
+    'Viator': t.paxViator,
+    'Take': t.paxTake,
+    'Bimbi': t.paxBimbi,
+    'Repeats': t.repeats,
+    'Total Pax': totalPax(t),
+    'Bruto (€)': +t.revenueTotal.toFixed(2),
+    'Taxa (€)': +t.feeTotal.toFixed(2),
+    'Líquido (€)': +(t.revenueTotal / 1.23 - t.feeTotal).toFixed(2),
+    'Fee Manual': t.feeOverride ? 'Sim' : '',
+    'Notas': t.notes ?? '',
+  }));
 
   // Totals row
-  const totalFee = sorted.reduce((s, t) => s + t.participants * AGGREGATOR_FEE_PER_PERSON, 0);
   const totalGross = sorted.reduce((s, t) => s + t.revenueTotal, 0);
+  const totalFee = sorted.reduce((s, t) => s + t.feeTotal, 0);
+  const totalLiquido = sorted.reduce((s, t) => s + (t.revenueTotal / 1.23 - t.feeTotal), 0);
   rows.push({
     'Data': 'TOTAL',
     'Hora': '',
     'Tour': `${sorted.length} tours`,
-    'Pessoas': sorted.reduce((s, t) => s + t.participants, 0),
+    'Tipo': '',
+    'Civitatis': sorted.reduce((s, t) => s + t.paxCivitatis, 0),
+    'Viator': sorted.reduce((s, t) => s + t.paxViator, 0),
+    'Take': sorted.reduce((s, t) => s + t.paxTake, 0),
+    'Bimbi': sorted.reduce((s, t) => s + t.paxBimbi, 0),
+    'Repeats': sorted.reduce((s, t) => s + t.repeats, 0),
+    'Total Pax': sorted.reduce((s, t) => s + totalPax(t), 0),
     'Bruto (€)': +totalGross.toFixed(2),
-    'Comissão (€)': +totalFee.toFixed(2),
-    'Líquido (€)': +(totalGross - totalFee).toFixed(2),
+    'Taxa (€)': +totalFee.toFixed(2),
+    'Líquido (€)': +totalLiquido.toFixed(2),
+    'Fee Manual': '',
     'Notas': '',
   });
 
   const ws = XLSX.utils.json_to_sheet(rows);
 
-  // Column widths
   ws['!cols'] = [
-    { wch: 12 }, { wch: 7 }, { wch: 18 }, { wch: 8 },
-    { wch: 11 }, { wch: 13 }, { wch: 11 }, { wch: 30 },
+    { wch: 12 }, { wch: 7 }, { wch: 18 }, { wch: 10 },
+    { wch: 10 }, { wch: 8 }, { wch: 8 }, { wch: 8 },
+    { wch: 8 }, { wch: 10 }, { wch: 11 }, { wch: 10 },
+    { wch: 11 }, { wch: 10 }, { wch: 30 },
   ];
 
   const wb = XLSX.utils.book_new();

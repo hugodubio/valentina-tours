@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import type { Tour } from '../types/tour';
 import { config } from '../config';
 
@@ -8,14 +8,7 @@ function load(): Tour[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (JSON.parse(raw) as any[]).map(t => {
-      if ('revenuePerPerson' in t && !('revenueTotal' in t)) {
-        const { revenuePerPerson, ...rest } = t;
-        return { ...rest, revenueTotal: (revenuePerPerson as number) * (t.participants as number || 1) };
-      }
-      return t as Tour;
-    });
+    return JSON.parse(raw) as Tour[];
   } catch {
     return [];
   }
@@ -52,5 +45,15 @@ export function useTours() {
     });
   }, []);
 
-  return { tours, addTour, updateTour, deleteTour };
+  // repeats por mês — usado para calcular comissão de tours privados
+  const repeatsPerMonth = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const t of tours) {
+      const mk = t.date.slice(0, 7);
+      map[mk] = (map[mk] ?? 0) + t.repeats;
+    }
+    return map;
+  }, [tours]);
+
+  return { tours, addTour, updateTour, deleteTour, repeatsPerMonth };
 }
